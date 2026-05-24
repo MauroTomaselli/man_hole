@@ -232,3 +232,25 @@ body {
     color: var(--bg-color);
     box-shadow: 0 0 30px var(--cyan);
 }
+
+/* Mobile Responsiveness for Screens */
+@media screen and (max-width: 800px) {
+    #game-over-screen h2, #tutorial-screen h2 {
+        font-size: 32px;
+        margin-bottom: 10px;
+    }
+    
+    #game-over-screen p, #tutorial-screen p {
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+    
+    #game-over-screen p:last-of-type, #tutorial-screen p:last-of-type {
+        margin-bottom: 15px;
+    }
+    
+    #restart-btn, #start-btn {
+        padding: 10px 20px;
+        font-size: 16px;
+    }
+}
