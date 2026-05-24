@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Manhole - A modern 2D web game built with Three.js">
+    <title>Manhole: Neon Nights</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+    <!-- Google Fonts for modern typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
+    <!-- Three.js (r128) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+    <div id="orientation-warning">
+        <div class="warning-content">
+            <svg viewBox="0 0 24 24" width="48" height="48" stroke="currentColor" stroke-width="2" fill="none">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+                <line x1="12" y1="18" x2="12.01" y2="18"></line>
+            </svg>
+            <h2>Please Rotate Your Device</h2>
+            <p>This game is best played in landscape mode.</p>
+        </div>
+    </div>
+
+    <div id="game-wrapper">
+        <div id="game-container">
+            <canvas id="game-canvas"></canvas>
+            
+            <div id="ui-layer">
+                <div class="hud">
+                    <div class="score-container">SCORE: <span id="score">0</span></div>
+                    <div class="lives-container">LIVES: <span id="lives">★★★</span></div>
+                </div>
+
+                <div id="game-over-screen" class="hidden">
+                    <h2>GAME OVER</h2>
+                    <p>Final Score: <span id="final-score">0</span></p>
+                    <button id="restart-btn">PLAY AGAIN</button>
+                </div>
+
+                <!-- Tutorial Screen -->
+                <div id="tutorial-screen">
+                    <h2>COME SI GIOCA</h2>
+                    <p>Sposta il tombino per salvare i pedoni prima che cadano!</p>
+                    <p>Usa i pulsanti a schermo, oppure Q, E, A, D sulla tastiera.</p>
+                    <button id="start-btn">INIZIA</button>
+                </div>
+
+                <!-- Control Buttons -->
+                <button class="control-btn top-left" id="btn-tl"></button>
+                <button class="control-btn top-right" id="btn-tr"></button>
+                <button class="control-btn bottom-left" id="btn-bl"></button>
+                <button class="control-btn bottom-right" id="btn-br"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/entities.js?v=2"></script>
+    <script src="js/main.js?v=2"></script>
+</body>
+</html>

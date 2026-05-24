@@ -1,0 +1,234 @@
+:root {
+    --bg-color: #03030a;
+    --container-bg: #0b0b1a;
+    --cyan: #00ffff;
+    --magenta: #ff00ff;
+    --text-color: #e0e0ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: 'Outfit', sans-serif;
+    overflow: hidden;
+}
+
+/* Force Landscape Warning */
+#orientation-warning {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(3, 3, 10, 0.95);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+
+.warning-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    color: var(--cyan);
+}
+
+.warning-content svg {
+    animation: rotatePhone 2s infinite ease-in-out;
+}
+
+@keyframes rotatePhone {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(-90deg); }
+    100% { transform: rotate(-90deg); }
+}
+
+@media screen and (orientation: portrait) and (max-width: 768px) {
+    #orientation-warning {
+        display: flex;
+    }
+}
+
+/* Game Layout */
+#game-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+}
+
+#game-container {
+    position: relative;
+    width: 100%;
+    max-width: calc(100vh * (16 / 9));
+    aspect-ratio: 16 / 9;
+    background: var(--container-bg);
+    box-shadow: 0 0 50px rgba(0, 255, 255, 0.1);
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+@media screen and (max-aspect-ratio: 16/9) {
+    #game-container {
+        width: 100vw;
+        max-height: calc(100vw * (9 / 16));
+    }
+}
+
+#game-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* UI Layer */
+#ui-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none; /* Let clicks pass through except for buttons */
+}
+
+.hud {
+    position: absolute;
+    top: 20px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    font-size: 24px;
+    font-weight: 700;
+    text-shadow: 0 0 10px var(--cyan);
+    color: var(--cyan);
+    pointer-events: none;
+}
+
+.lives-container {
+    color: var(--magenta);
+    text-shadow: 0 0 10px var(--magenta);
+}
+
+/* Control Buttons */
+.control-btn {
+    position: absolute;
+    width: 12%;
+    aspect-ratio: 1; /* Circular buttons */
+    background: rgba(0, 255, 255, 0.05);
+    border: 2px solid rgba(0, 255, 255, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    backdrop-filter: blur(4px);
+    transition: all 0.1s ease;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transform: translate(-50%, -50%);
+}
+
+.control-btn::after {
+    content: '';
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    border: 2px dashed rgba(0, 255, 255, 0.5);
+    opacity: 0.5;
+}
+
+.control-btn:active, .control-btn.active {
+    background: rgba(0, 255, 255, 0.3);
+    box-shadow: 0 0 30px var(--cyan), inset 0 0 15px var(--cyan);
+    transform: translate(-50%, -50%) scale(0.9);
+}
+
+/* Positioned exactly next to the holes */
+.top-left { top: 33.3%; left: 15%; }
+.bottom-left { top: 66.6%; left: 15%; }
+.top-right { top: 33.3%; left: 85%; }
+.bottom-right { top: 66.6%; left: 85%; }
+
+/* Screens (Game Over & Tutorial) */
+#game-over-screen, #tutorial-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto;
+    backdrop-filter: blur(5px);
+    z-index: 30;
+    transition: opacity 0.3s;
+    text-align: center;
+    padding: 20px;
+}
+
+#game-over-screen.hidden, #tutorial-screen.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+#game-over-screen h2, #tutorial-screen h2 {
+    font-size: 64px;
+    color: var(--magenta);
+    text-shadow: 0 0 20px var(--magenta);
+    margin-bottom: 20px;
+}
+
+#game-over-screen p, #tutorial-screen p {
+    font-size: 32px;
+    color: white;
+    margin-bottom: 15px;
+    max-width: 80%;
+}
+
+#game-over-screen p:last-of-type, #tutorial-screen p:last-of-type {
+    margin-bottom: 40px;
+}
+
+#restart-btn, #start-btn {
+    padding: 15px 40px;
+    font-size: 24px;
+    font-weight: 700;
+    font-family: inherit;
+    background: transparent;
+    color: var(--cyan);
+    border: 2px solid var(--cyan);
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 0 15px rgba(0, 255, 255, 0.3), inset 0 0 10px rgba(0, 255, 255, 0.1);
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+#restart-btn:hover, #start-btn:hover {
+    background: var(--cyan);
+    color: var(--bg-color);
+    box-shadow: 0 0 30px var(--cyan);
+}
