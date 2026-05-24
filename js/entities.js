@@ -27,6 +27,16 @@ class Pedestrian {
         this.logicalY = y + 6;
     }
 
+    step() {
+        if (!this.active || this.falling) return;
+        
+        const stepSize = 8;
+        this.previousStepX = this.mesh.position.x;
+        this.mesh.position.x += this.direction * stepSize;
+        this.logicalX = this.mesh.position.x;
+        this.justStepped = true;
+    }
+
     update(dt) {
         if (!this.active) return;
 
@@ -41,30 +51,7 @@ class Pedestrian {
                 this.active = false;
                 this.mesh.visible = false;
             }
-            return;
         }
-
-        // Normal movement (smooth internally)
-        this.logicalX += this.speed * this.direction * dt;
-        
-        // Strict bit-based movement (8 units per bit)
-        const stepSize = 8;
-        const prevStepIndex = this.currentStepIndex;
-        this.currentStepIndex = Math.round(this.logicalX / stepSize);
-        
-        this.mesh.position.x = this.currentStepIndex * stepSize;
-        
-        // Track step transitions for collision logic
-        if (this.currentStepIndex !== prevStepIndex && prevStepIndex !== undefined) {
-            this.justStepped = true;
-            this.previousStepX = prevStepIndex * stepSize;
-            if (typeof playTick === 'function') playTick();
-        } else {
-            this.justStepped = false;
-        }
-        
-        // Poggiano sempre sul pavimento (no sospensione)
-        this.mesh.position.y = this.logicalY;
     }
     
     fall() {

@@ -20,6 +20,7 @@ let totalGameTime = 0;
 let lastSpawnIncreaseTime = 0;
 let lastSpeedIncreaseTime = -15; // Offset by 15s so it hits at 15, 45, 75...
 let audioCtx;
+let tickTimer = 0;
 
 // DOM Elements
 const scoreEl = document.getElementById('score');
@@ -141,6 +142,13 @@ function setupControls() {
     restartBtn.addEventListener('click', restartGame);
     pauseBtn.addEventListener('click', togglePause);
     pauseScreen.addEventListener('click', togglePause);
+    
+    // Mobile Touch events for pause
+    pauseBtn.addEventListener('touchstart', (e) => { e.preventDefault(); togglePause(); }, {passive: false});
+    pauseScreen.addEventListener('touchstart', (e) => { e.preventDefault(); togglePause(); }, {passive: false});
+
+    // Unlock audio on first touch anywhere
+    document.addEventListener('touchstart', initAudio, { once: true });
 }
 
 function initAudio() {
@@ -169,6 +177,25 @@ function playTick() {
     
     osc.start();
     osc.stop(audioCtx.currentTime + 0.05);
+}
+
+function playSuccess() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.1);
 }
 
 function startGame() {
@@ -231,16 +258,14 @@ function spawnPedestrian() {
     return true;
 }
 
-function handleCollisions(dt) {
+function handleCollisions() {
     pedestrians.forEach(ped => {
         if (!ped.active || ped.falling) return;
 
         const checkHole = (holeX, holeId, isFirst) => {
-            // We check exactly when they try to step OUT of the hole (from holeX to the next bit)
-            // This means they arrived at the hole, waited in 'sospensione' for one full bit, and now advance.
-            if (ped.justStepped && ped.previousStepX === holeX) {
+            // Check EXACTLY when they step ON the hole
+            if (ped.justStepped && ped.logicalX === holeX) {
                 
-                // Which hole is this in terms of Player position?
                 let requiredPlayerPos = '';
                 if (ped.isTopPath) {
                     requiredPlayerPos = (holeX === -40) ? 'TL' : 'TR';
@@ -253,12 +278,11 @@ function handleCollisions(dt) {
                     if (isFirst) ped.passedFirstHole = true;
                     else ped.passedSecondHole = true;
                     
+                    playSuccess();
                     updateScore(10);
                 } else {
                     // Miss
                     ped.fall();
-                    ped.logicalX = holeX; // visually fall from the hole
-                    ped.mesh.position.x = holeX;
                     loseLife();
                 }
             }
@@ -313,6 +337,7 @@ function restartGame() {
     totalGameTime = 0;
     lastSpawnIncreaseTime = 0;
     lastSpeedIncreaseTime = -15;
+    tickTimer = 0;
     scoreEl.innerText = '0';
     livesEl.innerText = '★★★';
     gameOverScreen.classList.add('hidden');
@@ -355,20 +380,42 @@ function gameLoop(time) {
         }
     }
 
-    // Update pedestrians
+    // Global Tick for pedestrian steps
+    tickTimer += dt;
+    const tickInterval = 8 / baseSpeed;
+    
+    if (tickTimer >= tickInterval) {
+        tickTimer = 0;
+        let stepped = false;
+        
+        for (let ped of pedestrians) {
+            if (ped.active && !ped.falling) {
+                ped.step();
+                stepped = true;
+            }
+        }
+        
+        if (stepped) playTick();
+        
+        // Check collisions exactly on the tick
+        handleCollisions();
+        
+        // Reset justStepped
+        for (let ped of pedestrians) {
+            ped.justStepped = false;
+        }
+    }
+
+    // Update pedestrians (falling animations, removal)
     for (let i = pedestrians.length - 1; i >= 0; i--) {
         const ped = pedestrians[i];
         ped.update(dt);
         
-        // Remove if way off screen or finished falling
         if (!ped.active || ped.logicalX > GAME_WIDTH || ped.logicalX < -GAME_WIDTH) {
             ped.destroy(scene);
             pedestrians.splice(i, 1);
         }
     }
-
-    // Collisions
-    handleCollisions(dt);
 
     // Render
     renderer.render(scene, camera);
