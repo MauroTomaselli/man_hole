@@ -239,7 +239,7 @@ body {
 }
 
 #pause-btn {
-    background: transparent;
+    background: rgba(0, 0, 0, 0.6);
     color: var(--cyan);
     border: 2px solid var(--cyan);
     border-radius: 10px;
@@ -250,6 +250,7 @@ body {
     cursor: pointer;
     pointer-events: auto;
     text-transform: uppercase;
+    backdrop-filter: blur(2px);
 }
 
 #pause-btn:hover {

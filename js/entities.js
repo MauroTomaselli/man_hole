@@ -58,6 +58,7 @@ class Pedestrian {
         if (this.currentStepIndex !== prevStepIndex && prevStepIndex !== undefined) {
             this.justStepped = true;
             this.previousStepX = prevStepIndex * stepSize;
+            if (typeof playTick === 'function') playTick();
         } else {
             this.justStepped = false;
         }

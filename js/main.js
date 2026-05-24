@@ -8,14 +8,18 @@ let player;
 let pedestrians = [];
 let lastTime = 0;
 let spawnTimer = 0;
-let spawnInterval = 2.5; // Seconds between spawns
-let baseSpeed = 12; // Units per second
+let spawnInterval = 5.0; // Seconds between spawns (starts at 50% frequency)
+let baseSpeed = 8; // Units per second (reduced initial speed)
 
 let score = 0;
 let lives = 3;
 let isGameOver = false;
 let isGameStarted = false;
 let isPaused = false;
+let totalGameTime = 0;
+let lastSpawnIncreaseTime = 0;
+let lastSpeedIncreaseTime = -15; // Offset by 15s so it hits at 15, 45, 75...
+let audioCtx;
 
 // DOM Elements
 const scoreEl = document.getElementById('score');
@@ -139,9 +143,45 @@ function setupControls() {
     pauseScreen.addEventListener('click', togglePause);
 }
 
+function initAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+    }
+}
+
+function playTick() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+    
+    gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+    
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+}
+
 function startGame() {
     isGameStarted = true;
     tutorialScreen.classList.add('hidden');
+    initAudio();
+    try {
+        if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+        }
+    } catch (e) {
+        console.warn("Fullscreen API not supported or denied.");
+    }
 }
 
 function togglePause() {
@@ -157,11 +197,8 @@ function togglePause() {
     }
 }
 
-let totalGameTime = 0;
-
 function spawnPedestrian() {
-    // Speed increases slightly based on score
-    const currentSpeed = baseSpeed + (score * 0.04);
+    const currentSpeed = baseSpeed;
     
     // Safety check to ensure no simultaneous arrivals at ANY hole
     const SAFE_WINDOW = 0.8; // Seconds of safe buffer between any two pedestrians reaching any hole
@@ -241,9 +278,6 @@ function handleCollisions(dt) {
 function updateScore(points) {
     score += points;
     scoreEl.innerText = score;
-    
-    // Decrease spawn interval as score goes up
-    spawnInterval = Math.max(0.8, 2.5 - (score * 0.005));
 }
 
 function loseLife() {
@@ -274,7 +308,11 @@ function restartGame() {
     isGameOver = false;
     score = 0;
     lives = 3;
-    spawnInterval = 2.5;
+    spawnInterval = 5.0;
+    baseSpeed = 8;
+    totalGameTime = 0;
+    lastSpawnIncreaseTime = 0;
+    lastSpeedIncreaseTime = -15;
     scoreEl.innerText = '0';
     livesEl.innerText = '★★★';
     gameOverScreen.classList.add('hidden');
@@ -298,6 +336,16 @@ function gameLoop(time) {
     }
 
     totalGameTime += dt;
+
+    if (totalGameTime - lastSpawnIncreaseTime >= 30) {
+        lastSpawnIncreaseTime += 30;
+        spawnInterval *= 0.9; // Aumenta quantità pedoni (riduce intervallo del 10%)
+    }
+
+    if (totalGameTime - lastSpeedIncreaseTime >= 30) {
+        lastSpeedIncreaseTime += 30;
+        baseSpeed *= 1.1; // Aumenta velocità del 10%
+    }
 
     // Spawning
     spawnTimer += dt;
