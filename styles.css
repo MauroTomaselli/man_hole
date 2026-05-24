@@ -169,8 +169,8 @@ body {
 .top-right { top: 33.3%; left: 92%; }
 .bottom-right { top: 66.6%; left: 92%; }
 
-/* Screens (Game Over & Tutorial) */
-#game-over-screen, #tutorial-screen {
+/* Screens (Game Over, Tutorial, Pause) */
+#game-over-screen, #tutorial-screen, #pause-screen {
     position: absolute;
     top: 0;
     left: 0;
@@ -186,35 +186,40 @@ body {
     z-index: 30;
     transition: opacity 0.3s;
     text-align: center;
-    padding: 20px;
+    padding: 2vmin;
 }
 
-#game-over-screen.hidden, #tutorial-screen.hidden {
+#game-over-screen.hidden, #tutorial-screen.hidden, #pause-screen.hidden {
     opacity: 0;
     pointer-events: none;
 }
 
-#game-over-screen h2, #tutorial-screen h2 {
-    font-size: 64px;
+#game-over-screen h2, #tutorial-screen h2, #pause-screen h2 {
+    font-size: 8vmin;
     color: var(--magenta);
     text-shadow: 0 0 20px var(--magenta);
-    margin-bottom: 20px;
+    margin-bottom: 2vmin;
+}
+
+#pause-screen h2 {
+    color: var(--cyan);
+    text-shadow: 0 0 20px var(--cyan);
 }
 
 #game-over-screen p, #tutorial-screen p {
-    font-size: 32px;
+    font-size: 4vmin;
     color: white;
-    margin-bottom: 15px;
+    margin-bottom: 1.5vmin;
     max-width: 80%;
 }
 
 #game-over-screen p:last-of-type, #tutorial-screen p:last-of-type {
-    margin-bottom: 40px;
+    margin-bottom: 4vmin;
 }
 
 #restart-btn, #start-btn {
-    padding: 15px 40px;
-    font-size: 24px;
+    padding: 2vmin 4vmin;
+    font-size: 4vmin;
     font-weight: 700;
     font-family: inherit;
     background: transparent;
@@ -233,24 +238,21 @@ body {
     box-shadow: 0 0 30px var(--cyan);
 }
 
-/* Mobile Responsiveness for Screens */
-@media screen and (max-width: 800px) {
-    #game-over-screen h2, #tutorial-screen h2 {
-        font-size: 32px;
-        margin-bottom: 10px;
-    }
-    
-    #game-over-screen p, #tutorial-screen p {
-        font-size: 16px;
-        margin-bottom: 5px;
-    }
-    
-    #game-over-screen p:last-of-type, #tutorial-screen p:last-of-type {
-        margin-bottom: 15px;
-    }
-    
-    #restart-btn, #start-btn {
-        padding: 10px 20px;
-        font-size: 16px;
-    }
+#pause-btn {
+    background: transparent;
+    color: var(--cyan);
+    border: 2px solid var(--cyan);
+    border-radius: 10px;
+    padding: 1vmin 2vmin;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 3vmin;
+    cursor: pointer;
+    pointer-events: auto;
+    text-transform: uppercase;
+}
+
+#pause-btn:hover {
+    background: var(--cyan);
+    color: var(--bg-color);
 }

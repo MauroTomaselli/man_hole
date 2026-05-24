@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Manhole - A modern 2D web game built with Three.js">
     <title>Manhole: Neon Nights</title>
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link rel="stylesheet" href="styles.css?v=5">
     <!-- Google Fonts for modern typography -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap" rel="stylesheet">
     <!-- Three.js (r128) -->
@@ -30,7 +30,13 @@
             <div id="ui-layer">
                 <div class="hud">
                     <div class="score-container">SCORE: <span id="score">0</span></div>
+                    <button id="pause-btn">PAUSA</button>
                     <div class="lives-container">LIVES: <span id="lives">★★★</span></div>
+                </div>
+
+                <!-- Pause Screen -->
+                <div id="pause-screen" class="hidden">
+                    <h2>IN PAUSA</h2>
                 </div>
 
                 <div id="game-over-screen" class="hidden">

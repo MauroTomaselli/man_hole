@@ -15,6 +15,7 @@ let score = 0;
 let lives = 3;
 let isGameOver = false;
 let isGameStarted = false;
+let isPaused = false;
 
 // DOM Elements
 const scoreEl = document.getElementById('score');
@@ -24,6 +25,8 @@ const finalScoreEl = document.getElementById('final-score');
 const restartBtn = document.getElementById('restart-btn');
 const tutorialScreen = document.getElementById('tutorial-screen');
 const startBtn = document.getElementById('start-btn');
+const pauseBtn = document.getElementById('pause-btn');
+const pauseScreen = document.getElementById('pause-screen');
 
 function init() {
     // 1. Setup Three.js Scene
@@ -125,14 +128,33 @@ function setupControls() {
     window.addEventListener('keyup', () => {
         controls.forEach(cx => cx.btn.classList.remove('active'));
     });
+    
+    window.addEventListener('keydown', (e) => {
+        if(e.key === 'p' || e.key === 'P' || e.key === 'Escape') togglePause();
+    });
 
     startBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', restartGame);
+    pauseBtn.addEventListener('click', togglePause);
+    pauseScreen.addEventListener('click', togglePause);
 }
 
 function startGame() {
     isGameStarted = true;
     tutorialScreen.classList.add('hidden');
+}
+
+function togglePause() {
+    if (!isGameStarted || isGameOver) return;
+    isPaused = !isPaused;
+    if (isPaused) {
+        pauseScreen.classList.remove('hidden');
+        pauseBtn.innerText = 'RIPRENDI';
+    } else {
+        pauseScreen.classList.add('hidden');
+        pauseBtn.innerText = 'PAUSA';
+        lastTime = performance.now();
+    }
 }
 
 let totalGameTime = 0;
@@ -267,10 +289,10 @@ function restartGame() {
 function gameLoop(time) {
     requestAnimationFrame(gameLoop);
 
-    const dt = (time - lastTime) / 1000;
+    let dt = (time - lastTime) / 1000;
     lastTime = time;
 
-    if (isGameOver || !isGameStarted || dt > 0.1) {
+    if (isGameOver || !isGameStarted || isPaused || dt > 0.1) {
         renderer.render(scene, camera);
         return; 
     }
