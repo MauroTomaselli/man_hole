@@ -164,10 +164,10 @@ body {
 }
 
 /* Positioned exactly next to the holes */
-.top-left { top: 33.3%; left: 15%; }
-.bottom-left { top: 66.6%; left: 15%; }
-.top-right { top: 33.3%; left: 85%; }
-.bottom-right { top: 66.6%; left: 85%; }
+.top-left { top: 33.3%; left: 8%; }
+.bottom-left { top: 66.6%; left: 8%; }
+.top-right { top: 33.3%; left: 92%; }
+.bottom-right { top: 66.6%; left: 92%; }
 
 /* Screens (Game Over & Tutorial) */
 #game-over-screen, #tutorial-screen {

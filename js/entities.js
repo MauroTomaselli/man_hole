@@ -62,12 +62,8 @@ class Pedestrian {
             this.justStepped = false;
         }
         
-        // Alternating High/Low positions. 
-        // We want them HIGH (sospensione) at the holes (-40 and 40).
-        // -40 / 8 = -5. 40 / 8 = 5. Both are odd numbers.
-        // So when absolute currentStepIndex is odd, they are HIGH.
-        const isHigh = Math.abs(this.currentStepIndex % 2) === 1;
-        this.mesh.position.y = this.logicalY + (isHigh ? 3.5 : 0);
+        // Poggiano sempre sul pavimento (no sospensione)
+        this.mesh.position.y = this.logicalY;
     }
     
     fall() {
