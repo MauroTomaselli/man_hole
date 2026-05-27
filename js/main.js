@@ -8,7 +8,7 @@ let player;
 let pedestrians = [];
 let lastTime = 0;
 let spawnTimer = 0;
-let spawnInterval = 5.0; // Seconds between spawns (starts at 50% frequency)
+let spawnInterval = 8.0; // Seconds between spawns (starts at 50% frequency)
 let baseSpeed = 8; // Units per second (reduced initial speed)
 
 let score = 0;
@@ -229,15 +229,15 @@ function spawnPedestrian() {
     
     // Safety check to ensure no simultaneous arrivals at ANY hole
     const SAFE_WINDOW = 0.8; // Seconds of safe buffer between any two pedestrians reaching any hole
-    const timeToHole1 = 45 / currentSpeed;
-    const timeToHole2 = 125 / currentSpeed;
+    const timeToHole1 = 48 / currentSpeed;
+    const timeToHole2 = 128 / currentSpeed;
     const newArrival1 = totalGameTime + timeToHole1;
     const newArrival2 = totalGameTime + timeToHole2;
 
     for (let ped of pedestrians) {
         if (!ped.active || ped.falling) continue;
-        const arrival1 = ped.spawnTime + (45 / ped.speed);
-        const arrival2 = ped.spawnTime + (125 / ped.speed);
+        const arrival1 = ped.spawnTime + (48 / ped.speed);
+        const arrival2 = ped.spawnTime + (128 / ped.speed);
 
         if (Math.abs(newArrival1 - arrival1) < SAFE_WINDOW || 
             Math.abs(newArrival1 - arrival2) < SAFE_WINDOW ||
@@ -250,7 +250,9 @@ function spawnPedestrian() {
     // Random path (top or bottom)
     const isTopPath = Math.random() > 0.5;
     const y = isTopPath ? 15 : -15;
-    const startX = isTopPath ? -(GAME_WIDTH/2 + 5) : (GAME_WIDTH/2 + 5);
+    // Align startX so it matches holes at -40 and 40 with a step size of 8
+    // distance is 48, so 48 / 8 = 6 steps
+    const startX = isTopPath ? -88 : 88;
     
     const ped = new Pedestrian(scene, isTopPath, startX, y, currentSpeed, scene.userData.pedMat);
     ped.spawnTime = totalGameTime;
@@ -332,7 +334,7 @@ function restartGame() {
     isGameOver = false;
     score = 0;
     lives = 3;
-    spawnInterval = 5.0;
+    spawnInterval = 8.0;
     baseSpeed = 8;
     totalGameTime = 0;
     lastSpawnIncreaseTime = 0;
